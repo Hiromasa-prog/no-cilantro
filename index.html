@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Không ngò">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>Vui lòng không thêm ngò</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      background: #ffffff;
+      color: #111111;
+      padding: max(24px, env(safe-area-inset-top))
+               max(20px, env(safe-area-inset-right))
+               max(24px, env(safe-area-inset-bottom))
+               max(20px, env(safe-area-inset-left));
+    }
+
+    main {
+      width: min(100%, 720px);
+      text-align: center;
+    }
+
+    #message {
+      margin: 0 0 40px;
+      font-size: clamp(2.4rem, 10vw, 5.5rem);
+      line-height: 1.15;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      overflow-wrap: anywhere;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    button {
+      width: min(100%, 360px);
+      min-height: 64px;
+      border: 0;
+      border-radius: 16px;
+      background: #111111;
+      color: #ffffff;
+      font-size: 1.25rem;
+      font-weight: 700;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    #status {
+      min-height: 1.5em;
+      margin: 18px 0 0;
+      font-size: 1rem;
+      color: #555555;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p id="message">Vui lòng không thêm ngò.</p>
+    <button id="copyButton" type="button">コピー / Copy</button>
+    <p id="status" aria-live="polite"></p>
+  </main>
+
+  <script>
+    const text = "Vui lòng không thêm ngò.";
+    const button = document.getElementById("copyButton");
+    const status = document.getElementById("status");
+
+    async function copyText() {
+      try {
+        await navigator.clipboard.writeText(text);
+        status.textContent = "コピーしました";
+      } catch {
+        const area = document.createElement("textarea");
+        area.value = text;
+        area.setAttribute("readonly", "");
+        area.style.position = "fixed";
+        area.style.opacity = "0";
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+        status.textContent = "コピーしました";
+      }
+    }
+
+    button.addEventListener("click", copyText);
+    document.getElementById("message").addEventListener("click", copyText);
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
