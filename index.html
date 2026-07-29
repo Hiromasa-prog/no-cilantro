@@ -1,19 +1,21 @@
 <!doctype html>
-<html lang="vi">
+<html lang="ja">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#ffffff">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Không ngò">
+  <meta name="apple-mobile-web-app-title" content="ベトナム語">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <title>Vui lòng không thêm ngò</title>
+  <title>ベトナム語カード</title>
+
   <style>
     :root {
-      color-scheme: light;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #111;
+      background: #fff;
     }
 
     * {
@@ -23,89 +25,221 @@
     body {
       margin: 0;
       min-height: 100svh;
-      display: grid;
-      place-items: center;
-      background: #ffffff;
-      color: #111111;
-      padding: max(24px, env(safe-area-inset-top))
-               max(20px, env(safe-area-inset-right))
-               max(24px, env(safe-area-inset-bottom))
-               max(20px, env(safe-area-inset-left));
-    }
-
-    main {
-      width: min(100%, 720px);
-      text-align: center;
-    }
-
-    #message {
-      margin: 0 0 40px;
-      font-size: clamp(2.4rem, 10vw, 5.5rem);
-      line-height: 1.15;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      overflow-wrap: anywhere;
-      user-select: text;
-      -webkit-user-select: text;
+      background: #fff;
+      padding:
+        max(24px, env(safe-area-inset-top))
+        max(20px, env(safe-area-inset-right))
+        max(24px, env(safe-area-inset-bottom))
+        max(20px, env(safe-area-inset-left));
     }
 
     button {
-      width: min(100%, 360px);
-      min-height: 64px;
-      border: 0;
-      border-radius: 16px;
-      background: #111111;
-      color: #ffffff;
-      font-size: 1.25rem;
-      font-weight: 700;
+      font: inherit;
       cursor: pointer;
       touch-action: manipulation;
     }
 
-    button:active {
+    .screen {
+      display: none;
+      min-height: calc(100svh - 48px);
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    #homeScreen {
+      flex-direction: column;
+      justify-content: center;
+      width: min(100%, 720px);
+      margin: 0 auto;
+      gap: 18px;
+    }
+
+    .menu-button {
+      width: 100%;
+      min-height: 92px;
+      border: 0;
+      border-radius: 18px;
+      background: #111;
+      color: #fff;
+      padding: 18px;
+      font-size: clamp(1.25rem, 5vw, 2rem);
+      font-weight: 750;
+    }
+
+    .menu-button:active,
+    .action-button:active,
+    .back-button:active {
       transform: scale(0.98);
     }
 
-    #status {
+    .phrase-screen {
+      position: relative;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: min(100%, 900px);
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .phrase {
+      margin: 0;
+      padding: 20px 0;
+      font-size: clamp(3rem, 12vw, 7rem);
+      line-height: 1.08;
+      font-weight: 850;
+      letter-spacing: -0.035em;
+      overflow-wrap: anywhere;
+    }
+
+    .actions {
+      width: min(100%, 420px);
+      margin-top: 40px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .action-button {
+      min-height: 64px;
+      border: 0;
+      border-radius: 16px;
+      background: #111;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 750;
+    }
+
+    .back-button {
+      min-height: 56px;
+      border: 2px solid #111;
+      border-radius: 16px;
+      background: #fff;
+      color: #111;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .status {
       min-height: 1.5em;
-      margin: 18px 0 0;
-      font-size: 1rem;
-      color: #555555;
+      margin: 14px 0 0;
+      color: #555;
+    }
+
+    .display-only-note {
+      margin: 20px 0 0;
+      color: #666;
+      font-size: 0.95rem;
     }
   </style>
 </head>
+
 <body>
   <main>
-    <p id="message">Vui lòng không thêm ngò.</p>
-    <button id="copyButton" type="button">コピー / Copy</button>
-    <p id="status" aria-live="polite"></p>
+    <section id="homeScreen" class="screen active" aria-label="メニュー">
+      <button class="menu-button" data-target="cilantroScreen">
+        パクチーなし
+      </button>
+
+      <button class="menu-button" data-target="takeawayScreen">
+        お持ち帰りできますか？
+      </button>
+
+      <button class="menu-button" data-target="cardScreen">
+        カード使えますか？
+      </button>
+    </section>
+
+    <section id="cilantroScreen" class="screen phrase-screen">
+      <p id="cilantroPhrase" class="phrase" lang="vi">
+        Vui lòng không thêm ngò.
+      </p>
+
+      <div class="actions">
+        <button id="copyButton" class="action-button" type="button">
+          コピー
+        </button>
+        <button class="back-button" type="button">
+          戻る
+        </button>
+      </div>
+
+      <p id="copyStatus" class="status" aria-live="polite"></p>
+    </section>
+
+    <section id="takeawayScreen" class="screen phrase-screen">
+      <p class="phrase" lang="vi">
+        Có thể mang về được không?
+      </p>
+
+      <div class="actions">
+        <button class="back-button" type="button">
+          戻る
+        </button>
+      </div>
+    </section>
+
+    <section id="cardScreen" class="screen phrase-screen">
+      <p class="phrase" lang="vi">
+        Có thể thanh toán bằng thẻ không?
+      </p>
+
+      <div class="actions">
+        <button class="back-button" type="button">
+          戻る
+        </button>
+      </div>
+    </section>
   </main>
 
   <script>
-    const text = "Vui lòng không thêm ngò.";
-    const button = document.getElementById("copyButton");
-    const status = document.getElementById("status");
+    const homeScreen = document.getElementById("homeScreen");
+    const screens = document.querySelectorAll(".screen");
+    const copyText = "Vui lòng không thêm ngò.";
+    const copyStatus = document.getElementById("copyStatus");
 
-    async function copyText() {
+    function showScreen(screenId) {
+      screens.forEach((screen) => {
+        screen.classList.toggle("active", screen.id === screenId);
+      });
+
+      copyStatus.textContent = "";
+      window.scrollTo(0, 0);
+    }
+
+    document.querySelectorAll(".menu-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        showScreen(button.dataset.target);
+      });
+    });
+
+    document.querySelectorAll(".back-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        showScreen("homeScreen");
+      });
+    });
+
+    async function copyCilantroText() {
       try {
-        await navigator.clipboard.writeText(text);
-        status.textContent = "コピーしました";
+        await navigator.clipboard.writeText(copyText);
+        copyStatus.textContent = "コピーしました";
       } catch {
-        const area = document.createElement("textarea");
-        area.value = text;
-        area.setAttribute("readonly", "");
-        area.style.position = "fixed";
-        area.style.opacity = "0";
-        document.body.appendChild(area);
-        area.select();
+        const textarea = document.createElement("textarea");
+        textarea.value = copyText;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
         document.execCommand("copy");
-        area.remove();
-        status.textContent = "コピーしました";
+        textarea.remove();
+        copyStatus.textContent = "コピーしました";
       }
     }
 
-    button.addEventListener("click", copyText);
-    document.getElementById("message").addEventListener("click", copyText);
+    document.getElementById("copyButton").addEventListener("click", copyCilantroText);
+    document.getElementById("cilantroPhrase").addEventListener("click", copyCilantroText);
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
