@@ -1,4 +1,4 @@
-const CACHE_NAME = "no-cilantro-v2";
+const CACHE_NAME = "no-cilantro-v3";
 
 const FILES = [
   "./",

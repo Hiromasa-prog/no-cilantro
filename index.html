@@ -126,12 +126,6 @@
       margin: 14px 0 0;
       color: #555;
     }
-
-    .display-only-note {
-      margin: 20px 0 0;
-      color: #666;
-      font-size: 0.95rem;
-    }
   </style>
 </head>
 
@@ -140,6 +134,10 @@
     <section id="homeScreen" class="screen active" aria-label="メニュー">
       <button class="menu-button" data-target="cilantroScreen">
         パクチーなし
+      </button>
+
+      <button class="menu-button" data-target="notSpicyScreen">
+        辛くしないでください
       </button>
 
       <button class="menu-button" data-target="takeawayScreen">
@@ -157,7 +155,7 @@
       </p>
 
       <div class="actions">
-        <button id="copyButton" class="action-button" type="button">
+        <button class="action-button copy-button" type="button" data-copy-text="Vui lòng không thêm ngò." data-status-target="cilantroCopyStatus">
           コピー
         </button>
         <button class="back-button" type="button">
@@ -165,7 +163,24 @@
         </button>
       </div>
 
-      <p id="copyStatus" class="status" aria-live="polite"></p>
+      <p id="cilantroCopyStatus" class="status" aria-live="polite"></p>
+    </section>
+
+    <section id="notSpicyScreen" class="screen phrase-screen">
+      <p id="notSpicyPhrase" class="phrase" lang="vi">
+        Vui lòng không làm cay.
+      </p>
+
+      <div class="actions">
+        <button class="action-button copy-button" type="button" data-copy-text="Vui lòng không làm cay." data-status-target="notSpicyCopyStatus">
+          コピー
+        </button>
+        <button class="back-button" type="button">
+          戻る
+        </button>
+      </div>
+
+      <p id="notSpicyCopyStatus" class="status" aria-live="polite"></p>
     </section>
 
     <section id="takeawayScreen" class="screen phrase-screen">
@@ -194,17 +209,17 @@
   </main>
 
   <script>
-    const homeScreen = document.getElementById("homeScreen");
     const screens = document.querySelectorAll(".screen");
-    const copyText = "Vui lòng không thêm ngò.";
-    const copyStatus = document.getElementById("copyStatus");
+    const statuses = document.querySelectorAll(".status");
 
     function showScreen(screenId) {
       screens.forEach((screen) => {
         screen.classList.toggle("active", screen.id === screenId);
       });
 
-      copyStatus.textContent = "";
+      statuses.forEach((status) => {
+        status.textContent = "";
+      });
       window.scrollTo(0, 0);
     }
 
@@ -220,13 +235,13 @@
       });
     });
 
-    async function copyCilantroText() {
+    async function copyText(text, statusElement) {
       try {
-        await navigator.clipboard.writeText(copyText);
-        copyStatus.textContent = "コピーしました";
+        await navigator.clipboard.writeText(text);
+        statusElement.textContent = "コピーしました";
       } catch {
         const textarea = document.createElement("textarea");
-        textarea.value = copyText;
+        textarea.value = text;
         textarea.setAttribute("readonly", "");
         textarea.style.position = "fixed";
         textarea.style.opacity = "0";
@@ -234,12 +249,23 @@
         textarea.select();
         document.execCommand("copy");
         textarea.remove();
-        copyStatus.textContent = "コピーしました";
+        statusElement.textContent = "コピーしました";
       }
     }
 
-    document.getElementById("copyButton").addEventListener("click", copyCilantroText);
-    document.getElementById("cilantroPhrase").addEventListener("click", copyCilantroText);
+    document.querySelectorAll(".copy-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        copyText(button.dataset.copyText, document.getElementById(button.dataset.statusTarget));
+      });
+    });
+
+    document.getElementById("cilantroPhrase").addEventListener("click", () => {
+      copyText("Vui lòng không thêm ngò.", document.getElementById("cilantroCopyStatus"));
+    });
+
+    document.getElementById("notSpicyPhrase").addEventListener("click", () => {
+      copyText("Vui lòng không làm cay.", document.getElementById("notSpicyCopyStatus"));
+    });
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
